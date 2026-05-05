@@ -1071,12 +1071,9 @@ model ApprovalRequest {
   respondedAt   DateTime?
   createdAt     DateTime       @default(now())
 
-  requester ApprovalRequest[]   @relation("ApprovalRequester")
-  approver  ApprovalRequest[]   @relation("ApprovalApprover")
-  invoice   SalesInvoice?       @relation(fields: [invoiceId], references: [id])
-
-  requestedBy User  @relation("ApprovalRequester", fields: [requesterId], references: [id])
-  approvedBy  User? @relation("ApprovalApprover",  fields: [approverId],  references: [id])
+  invoice     SalesInvoice? @relation(fields: [invoiceId], references: [id])
+  requestedBy User          @relation("ApprovalRequester", fields: [requesterId], references: [id], map: "approval_requests_requesterId_fkey")
+  approvedBy  User?         @relation("ApprovalApprover",  fields: [approverId],  references: [id], map: "approval_requests_approverId_fkey")
 
   @@index([action])
   @@index([status])
