@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand: #059669;
+  --color-brand-dark: #047857;
+  --color-brand-light: #d1fae5;
+}
+
+* { box-sizing: border-box; }
+
+html { font-family: 'DM Sans', system-ui, sans-serif; }
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.dark body {
+  @apply bg-gray-950 text-gray-100;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #374151; }
+
+/* Monospace for codes/numbers */
+.mono { font-family: 'DM Mono', monospace; }
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: white; font-size: 12px; }
+}
+
+.print-only { display: none; }
+
+/* POS number pad */
+.numpad-btn {
+  @apply flex items-center justify-center font-bold text-xl rounded-xl
+         bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+         hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:border-emerald-400
+         transition-all active:scale-95 cursor-pointer select-none;
+}
+
+/* Barcode font */
+@font-face {
+  font-family: 'Barcode';
+  src: url('/fonts/LibreBarcode128-Regular.ttf') format('truetype');
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.dark .shimmer {
+  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background-size: 200% 100%;
+}
