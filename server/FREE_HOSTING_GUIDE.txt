@@ -1,0 +1,312 @@
+# FreshMart ERP — Free Hosting Guide
+# Railway (Backend + Database) + Vercel (Frontend)
+# Total cost: $0 — No credit card needed for basic testing
+# ============================================================
+
+WHAT YOU GET FOR FREE:
+  Railway:  $5 free credit/month  →  enough for ~500 hours of runtime
+  Vercel:   Completely free forever for Next.js frontends
+  Result:   A live URL like https://freshmart-ui.vercel.app
+
+IMPORTANT LIMITS ON FREE TIER:
+  • Railway app sleeps after 30 mins of inactivity (wakes up in ~10 seconds)
+  • Railway gives 500MB RAM, 1GB storage
+  • Vercel gives unlimited bandwidth for the frontend
+  • For a real shop with daily use, upgrade Railway to $5/month Hobby plan
+
+============================================================
+BEFORE YOU START — What You Need
+============================================================
+
+1. A GitHub account (free) — https://github.com
+   → FreshMart files must be uploaded to GitHub first
+
+2. A Railway account (free) — https://railway.app
+   → Sign up with your GitHub account
+
+3. A Vercel account (free) — https://vercel.com
+   → Sign up with your GitHub account
+
+You don't need to install anything on your computer.
+Everything is done in the browser.
+
+============================================================
+PART 1 — Upload Code to GitHub
+============================================================
+
+GitHub stores your code online so Railway and Vercel can read it.
+
+STEP 1.1 — Create a GitHub account
+  Go to: https://github.com
+  Click "Sign up" → enter email, password, username
+  Verify your email
+
+STEP 1.2 — Create two repositories
+
+  Repository 1 (Backend):
+  → Click the "+" icon top right → "New repository"
+  → Name: freshmart-api
+  → Keep it Private
+  → Click "Create repository"
+
+  Repository 2 (Frontend):
+  → Same steps
+  → Name: freshmart-ui
+  → Keep it Private
+  → Click "Create repository"
+
+STEP 1.3 — Upload your files to GitHub
+
+  OPTION A: Using GitHub Desktop (easiest for beginners)
+  ─────────────────────────────────────────────────────
+  1. Download GitHub Desktop: https://desktop.github.com
+  2. Sign in with your GitHub account
+  3. Click "File" → "Add local repository"
+  4. Browse to your "freshmart" folder on your PC
+  5. Click "Publish repository" → choose "freshmart-api"
+  6. Repeat for "freshmart-ui" folder → "freshmart-ui"
+
+  OPTION B: Using the GitHub website (drag and drop)
+  ─────────────────────────────────────────────────
+  1. Go to your freshmart-api repository on GitHub
+  2. Click "uploading an existing file"
+  3. Drag ALL files from your "freshmart" folder into the browser
+  4. Click "Commit changes"
+  5. Repeat for freshmart-ui repository
+
+  OPTION C: Using Git command line
+  ─────────────────────────────────
+  # In the freshmart folder:
+  git init
+  git add .
+  git commit -m "Initial commit"
+  git remote add origin https://github.com/YOUR-USERNAME/freshmart-api.git
+  git push -u origin main
+
+  # In the freshmart-ui folder:
+  git init
+  git add .
+  git commit -m "Initial commit"
+  git remote add origin https://github.com/YOUR-USERNAME/freshmart-ui.git
+  git push -u origin main
+
+============================================================
+PART 2 — Deploy Backend on Railway
+============================================================
+
+Railway will host your NestJS API + PostgreSQL database for free.
+
+STEP 2.1 — Create Railway account
+  Go to: https://railway.app
+  Click "Start a New Project"
+  Sign in with GitHub (click "Login with GitHub")
+  Authorize Railway to access your GitHub
+
+STEP 2.2 — Create a new project
+  Click "New Project"
+  Click "Deploy from GitHub repo"
+  Select "freshmart-api" from the list
+  Click "Deploy Now"
+
+  Railway will start building automatically.
+  You'll see build logs — this takes 3-5 minutes.
+
+STEP 2.3 — Add PostgreSQL database
+  In your Railway project:
+  Click "+ New" button
+  Click "Database"
+  Click "Add PostgreSQL"
+
+  Railway creates a PostgreSQL database automatically.
+  It gives you a DATABASE_URL — Railway handles this automatically.
+
+STEP 2.4 — Set environment variables
+  Click on your "freshmart-api" service (not the database)
+  Click "Variables" tab
+  Click "Raw Editor" and paste ALL of these:
+
+  ─────────────────────────────────────────────────────────
+  NODE_ENV=production
+  JWT_SECRET=change-this-to-any-long-random-string-abcdef123456
+  JWT_EXPIRES_IN=8h
+  TZ=Asia/Kuwait
+  CORS_ORIGIN=https://freshmart-ui.vercel.app
+  ─────────────────────────────────────────────────────────
+
+  Note: DATABASE_URL is added automatically by Railway
+  when you connect the PostgreSQL service.
+
+STEP 2.5 — Connect the database to the API
+  In your Railway project view, you should see two boxes:
+  - freshmart-api (your app)
+  - Postgres (the database)
+
+  Click on "freshmart-api" service
+  Go to "Variables" tab
+  Click "Add a Variable Reference"
+  Select DATABASE_URL from the PostgreSQL service
+
+  This links the database to your app automatically.
+
+STEP 2.6 — Get your Railway API URL
+  Click on your "freshmart-api" service
+  Click "Settings" tab
+  Scroll to "Networking" section
+  Click "Generate Domain"
+
+  You'll get a URL like:
+  https://freshmart-api-production-xxxx.railway.app
+
+  SAVE THIS URL — you need it for Vercel setup.
+
+STEP 2.7 — Seed the database (add demo data)
+  Click on your "freshmart-api" service
+  Click the "..." menu → "Railway CLI" or use the web terminal
+  
+  OR add this to your Variables temporarily:
+  SEED_ON_START=true
+
+  Better approach — use Railway's terminal:
+  Click your service → "Deploy" tab → click the latest deploy
+  Click "View Logs" — you'll see if migration ran
+  
+  The deploy.sh command in railway.toml runs:
+  "npx prisma migrate deploy" automatically on every deploy.
+  
+  To seed, add this environment variable:
+  Name:  RUN_SEED
+  Value: true
+  
+  Then re-deploy by clicking "Redeploy"
+
+============================================================
+PART 3 — Deploy Frontend on Vercel
+============================================================
+
+Vercel is the company that makes Next.js — hosting Next.js
+on Vercel is completely free and very fast.
+
+STEP 3.1 — Create Vercel account
+  Go to: https://vercel.com
+  Click "Sign Up"
+  Click "Continue with GitHub"
+  Authorize Vercel
+
+STEP 3.2 — Import your frontend
+  After signing in, click "Add New..." → "Project"
+  Click "Import" next to "freshmart-ui"
+  
+  If you don't see it:
+  Click "Adjust GitHub App Permissions"
+  Grant access to the freshmart-ui repository
+
+STEP 3.3 — Configure the project
+  On the "Configure Project" screen:
+  
+  Framework Preset: Next.js (auto-detected ✓)
+  Root Directory:   ./ (leave as is)
+  
+  Expand "Environment Variables" and add:
+  
+  Name:   NEXT_PUBLIC_API_URL
+  Value:  https://freshmart-api-production-xxxx.railway.app
+          (use your actual Railway URL from Step 2.6)
+
+  Click "Add" then click "Deploy"
+
+STEP 3.4 — Wait for deployment
+  Vercel builds your frontend in about 2-3 minutes.
+  You'll see a progress bar and build logs.
+  
+  When done, you'll see:
+  "Your project has been successfully deployed!"
+  
+  Click "Visit" to open your live FreshMart app!
+
+  Your URL will be something like:
+  https://freshmart-ui.vercel.app
+
+============================================================
+STEP 4 — Test Your Live App
+============================================================
+
+Open your Vercel URL in any browser.
+You should see the FreshMart login page.
+
+Login with:
+  Username: admin      Password: admin123
+  Username: manager    Password: manager123
+  Username: cashier    Password: cash123
+
+Test the POS:
+  1. Go to Cash Room → Open a shift
+  2. Go to QuickSell → add products to cart → checkout
+  3. Go to Dashboard → see the sale reflected
+
+Test from your phone:
+  Open the URL on your phone's browser.
+  The layout is fully responsive — works on mobile.
+
+============================================================
+TROUBLESHOOTING
+============================================================
+
+PROBLEM: Railway build fails
+  FIX: Check the build logs in Railway
+       Common cause: missing environment variables
+       Make sure DATABASE_URL is linked from PostgreSQL service
+
+PROBLEM: "Cannot connect to API" on frontend
+  FIX: Check NEXT_PUBLIC_API_URL in Vercel environment variables
+       It must match your Railway URL exactly (no trailing slash)
+       Redeploy Vercel after changing env vars
+
+PROBLEM: Login fails with "Invalid credentials"
+  FIX: Database may not have demo data
+       In Railway: go to your service → "Deploy" tab
+       Add env variable: SEED_ON_START=true
+       Click Redeploy
+
+PROBLEM: App loads but shows no products
+  FIX: Same as above — seed the database
+
+PROBLEM: Railway app is slow on first load
+  FIX: Free tier apps "sleep" when not used for 30 minutes
+       First request wakes it up (takes ~10 seconds)
+       This is normal on free tier — upgrade to $5/month to fix
+
+PROBLEM: "CORS error" in browser console
+  FIX: In Railway, update CORS_ORIGIN variable to match
+       your exact Vercel URL (including https://)
+       Then redeploy Railway service
+
+============================================================
+UPGRADING FROM FREE TO PAID (when ready)
+============================================================
+
+When you're ready to use FreshMart for real business:
+
+Railway Hobby Plan ($5/month):
+  - No sleep — always on
+  - More memory and storage
+  - Go to Railway → Settings → Change Plan
+
+Or move to a VPS ($5-6/month) for full control:
+  - Follow the DEPLOYMENT_GUIDE.txt
+  - More control, better performance
+
+============================================================
+QUICK SUMMARY — The 3 URLs You'll Have
+============================================================
+
+  GitHub (your code):   https://github.com/YOU/freshmart-api
+                        https://github.com/YOU/freshmart-ui
+
+  Railway (your API):   https://freshmart-api-production-xxxx.railway.app
+  
+  Vercel (your app):    https://freshmart-ui.vercel.app
+
+Share the Vercel URL with anyone to let them use FreshMart.
+They just need a browser — nothing to install.
+
+============================================================
